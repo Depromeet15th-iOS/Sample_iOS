@@ -32,7 +32,8 @@ final class ViewController: UIViewController {
     private func fetchUsers() {
         weatherUsecase.getWeather()
             .subscribe(onSuccess: { respones in
-                print("☁️ \(respones.clouds)")
+                guard let cloud = respones.clouds else { return }
+                print("☁️ \(cloud.all)")
             }, onError: { error in
                 print("Error: \(error)")
             })
