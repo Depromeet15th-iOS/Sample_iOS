@@ -7,24 +7,9 @@
 
 import Foundation
 
-// Repository Interface : 데이터 소스를 추상화하는 인터페이스
-protocol TestRepository {
-    func getUser(id: Int) async throws -> User
-}
+import RxSwift
 
-class MockRepository: TestRepository {
-    var mockUser: User?
-    var error: Error?
-
-    func getUser(id: Int) async throws -> User {
-        if let error = error {
-            throw error
-        }
-        
-        guard let user = mockUser else {
-            throw NetworkError.noData
-        }
-        
-        return user
-    }
+/// Repository Interface : 데이터 소스를 추상화하는 인터페이스
+protocol WeatherRepository {
+    func getWeather() -> Single<GetWeatherResponseDTO>
 }

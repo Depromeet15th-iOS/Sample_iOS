@@ -7,16 +7,17 @@
 
 import Foundation
 
-// 실제 데이터 소스 접근 구현부
-class MockRepositoryImpl: TestRepository {
+import RxSwift
+
+/// 실제 데이터 소스 접근 구현부
+class WeatherRepositoryImpl: WeatherRepository {
     private let networkService: NetworkServiceProtocol
 
     init(networkService: NetworkServiceProtocol) {
         self.networkService = networkService
     }
 
-    func getUser(id: Int) async throws -> User {
-        let endpoint = UserAPI.getUser(id: id)
-        return try await networkService.request(endpoint, responseType: User.self)
+    func getWeather() -> Single<GetWeatherResponseDTO> {
+        return networkService.request(endpoint: WeatherEndpoint.getWeather)
     }
 }
