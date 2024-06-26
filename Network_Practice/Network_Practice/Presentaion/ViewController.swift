@@ -7,14 +7,35 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+import RxSwift
 
+final class ViewController: UIViewController {
+    let disposeBag = DisposeBag()
+    let weatherRepository: WeatherRepository = WeatherRepositoryImpl(networkService: NetworkService())
+    let weatherUsecase: WeatherUseCase
+    
+    init() {
+        self.weatherUsecase = WeatherUseCaseImpl(weatherRepository: weatherRepository)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
-        // Do any additional setup after loading the view.
+        view.backgroundColor = NetworkReachability.shared.isReachable() ? .blue : .gray
+        fetchUsers()
     }
-
-
+    
+    private func fetchUsers() {
+        weatherUsecase.getWeather()
+            .subscribe(onSuccess: { respones in
+                print("☁️ \(respones.clouds)")
+            }, onError: { error in
+                print("Error: \(error)")
+            })
+            .disposed(by: disposeBag)
+    }
 }
-
