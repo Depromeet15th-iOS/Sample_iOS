@@ -16,7 +16,7 @@ enum NetworkError: Error {
 /// 네트워크 요청을 수행하는 메서드를 정의합니다.
 protocol NetworkServiceProtocol {
     /// request(:) 메서드는 APIEndpoint 프로토콜을 준수하는 엔드포인트를 받아 Single<T> 타입의 Observable을 반환합니다.
-    /// 공통되는 엔티티를 사용하기 위해 BaseResponse를 사용합니다. 
+    /// 공통되는 엔티티를 사용하기 위해 BaseResponse를 사용합니다.
     func request<T: Decodable>(endpoint: APIEndpoint) -> Single<T>
 }
 
@@ -24,6 +24,16 @@ class NetworkService: NetworkServiceProtocol {
     /// request(:) 메서드는 APIEndpoint 프로토콜을 준수하는 엔드포인트를 받아 네트워크 요청을 수행합니다.
     /// - Parameter endpoint: APIEndpoint 프로토콜을 준수하는 엔드포인트
     /// - Returns: Single<T> 타입의 Observable
+    /// 사용예시
+    /// ``` swift
+    /// weatherUsecase.getWeather()
+    ///   .subscribe(onSuccess: { respones in
+    ///     //로직 처리
+    ///  }, onError: { error in
+    ///     print("Error: \(error)")
+    ///  })
+    ///  .disposed(by: disposeBag)
+    /// ```
     func request<T: Decodable>(endpoint: APIEndpoint) -> Single<T> {
         /// url 생성
         let url = endpoint.baseURL.appendingPathComponent(endpoint.path)
