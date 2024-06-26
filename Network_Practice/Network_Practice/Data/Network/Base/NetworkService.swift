@@ -30,32 +30,43 @@ class NetworkService: NetworkServiceProtocol {
         /// 헤더 타입 변경
         let headers = endpoint.headers != nil ? HTTPHeaders(endpoint.headers!) : nil
         
+        print("======== 📤 Request ==========>")
+        print("HTTP Method: \(endpoint.method.rawValue)")
+        print("URL: \(endpoint.baseURL.absoluteString + endpoint.path)")
+        print("Header: \(headers ?? .default)")
+        print("Parameters: \(endpoint.parameters ?? .init())")
+        print("================================")
+        
+        
         /// 추후에 interceptor 추가 가능
         return RxAlamofire.requestJSON(endpoint.method,
                                        url,
                                        parameters: endpoint.parameters,
                                        headers: headers)
-            .debug()
-            .flatMap { response, data -> Single<T> in
-                do {
-                    if !(200...403).contains(response.statusCode) {
-                        throw NetworkError.serverError(statusCode: response.statusCode)
-                    }
-                    let data = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
-                    let decodedObject = try JSONDecoder().decode(T.self, from: data)
-                    return .just(decodedObject)
-                } catch {
-                    return .error(NetworkError.decodingError(error))
+        .flatMap { response, data -> Single<T> in
+            do {
+                if !(200...403).contains(response.statusCode) {
+                    throw NetworkError.serverError(statusCode: response.statusCode)
                 }
+                let data = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                let decodedObject = try JSONDecoder().decode(T.self, from: data)
+                print("======== 📥 Response <==========")
+                print(data.toPrettyPrintedString ?? "")
+                print("================================")
+                
+                return .just(decodedObject)
+            } catch {
+                return .error(NetworkError.decodingError(error))
             }
-            .asSingle()
-            .catchError { error in
-                if let afError = error as? AFError,
-                   let statusCode = afError.responseCode {
-                    return .error(NetworkError.serverError(statusCode: statusCode))
-                } else {
-                    return .error(NetworkError.unknown(error))
-                }
+        }
+        .asSingle()
+        .catchError { error in
+            if let afError = error as? AFError,
+               let statusCode = afError.responseCode {
+                return .error(NetworkError.serverError(statusCode: statusCode))
+            } else {
+                return .error(NetworkError.unknown(error))
             }
+        }
     }
 }
