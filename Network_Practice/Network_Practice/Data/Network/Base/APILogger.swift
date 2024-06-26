@@ -4,7 +4,12 @@ import Alamofire
 
 
 ///API 통신 로거 입니다. 세션 생성 시 PlugIn으로 넣어서 사용합니다
-///
+/// 사용 예시
+/// ``` swift
+/// session = Session(
+///     eventMonitors: [APIEventLogger()]
+///)
+/// ```
 final class APIEventLogger: EventMonitor {
     /// Request에 대한 로그
     func requestDidFinish(_ request: Request) {
