@@ -9,29 +9,45 @@ import Foundation
 
 import Alamofire
 
-enum UserAPI: APIEndpoint {
-    case getUser(id: Int)
+/// APIEndPoint 생성 예시
+/// enum으로 선언한 이유?
+// MARK: - UserEndpoint
+enum WeatherEndpoint {
+    case getWeather
+}
 
+extension WeatherEndpoint: APIEndpoint {
     var baseURL: URL {
-        return URL(string: "https://jsonplaceholder.typicode.com")!
+        return URL(string: Config.baseURL)!
     }
-
+    
     var path: String {
         switch self {
-        case .getUser(let id):
-            return "/users/\(id)"
+        case .getWeather:
+            return "/weather"
         }
     }
-
+    
     var method: HTTPMethod {
-        return .get
+        switch self {
+        case .getWeather:
+            return .get
+        }
     }
-
-    var headers: HTTPHeaders? {
-        return nil
+    
+    var parameters: [String: Any]? {
+        switch self {
+        case .getWeather:
+            return ["lat" : 44.34,
+                    "lon": 10.99,
+                    "appid": Config.apiKey]
+        }
     }
-
-    var parameters: Parameters? {
-        return nil
+    
+    var headers: [String: String]? {
+        switch self {
+        case .getWeather:
+            return ["Content-Type": "application/json"]
+        }
     }
 }
