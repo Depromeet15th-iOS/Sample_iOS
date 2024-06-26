@@ -6,20 +6,21 @@
 //
 
 import Foundation
+import RxSwift
 
-// UseCase 비즈니스 로직 처리
-protocol GetUserUseCase {
-    func execute(id: Int) async throws -> User
+///UseCase 비즈니스 로직 처리
+protocol WeatherUseCase {
+    func getWeather() -> Single<GetWeatherResponseDTO>
 }
 
-class GetUserUseCaseImpl: GetUserUseCase {
-    private let testRepository: TestRepository
+class WeatherUseCaseImpl: WeatherUseCase {
+    private let weatherRepository: WeatherRepository
 
-    init(testRepository: TestRepository) {
-        self.testRepository = testRepository
+    init(weatherRepository: WeatherRepository) {
+        self.weatherRepository = weatherRepository
     }
 
-    func execute(id: Int) async throws -> User {
-        return try await testRepository.getUser(id: id)
+    func getWeather() -> Single<GetWeatherResponseDTO> {
+        return weatherRepository.getWeather()
     }
 }
