@@ -29,8 +29,12 @@ class NetworkService: NetworkServiceProtocol {
         let url = endpoint.baseURL.appendingPathComponent(endpoint.path)
         /// 헤더 타입 변경
         let headers = endpoint.headers != nil ? HTTPHeaders(endpoint.headers!) : nil
-
-        return RxAlamofire.requestJSON(endpoint.method, url, parameters: endpoint.parameters, headers: headers)
+        
+        /// 추후에 interceptor 추가 가능
+        return RxAlamofire.requestJSON(endpoint.method,
+                                       url,
+                                       parameters: endpoint.parameters,
+                                       headers: headers)
             .debug()
             .flatMap { response, data -> Single<T> in
                 do {
